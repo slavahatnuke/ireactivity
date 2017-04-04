@@ -129,6 +129,16 @@ const connect = (component, propsCreators = {}, options = {}) => {
 };
 Reactivity.connect = connect;
 
+const iconnect = (component, propsCreators = {}, options = {}) => {
+    options = Object.assign({
+        immutable: true
+    }, options);
+
+    return connect(component, propsCreators, options);
+};
+
+Reactivity.iconnect = iconnect;
+
 class Provider extends Component {
     constructor(props, context) {
         super(props, context);
