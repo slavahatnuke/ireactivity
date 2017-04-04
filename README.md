@@ -1,7 +1,9 @@
-# ireactivity
+# iReactivity
 Simple React binding
 
 ## Example
+GitHub: [https://github.com/slavahatnuke/ireactivity-example](https://github.com/slavahatnuke/ireactivity-example)
+
 ```javascript
 // index.js
 
