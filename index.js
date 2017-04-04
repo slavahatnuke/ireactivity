@@ -1,14 +1,13 @@
 const React = require('react');
-const iobserver = require('iobserver');
+const iObserver = require('iobserver');
 
 const {Children, Component, PropTypes} = React;
-const {observable, update, subscribe, unsubscribe} = iobserver;
+const {observable, update, subscribe, unsubscribe} = iObserver;
 
-module.exports = {...iobserver};
-const exports = module.exports;
+const Reactivity = {...iObserver};
 
 const Store = observable;
-exports.Store = Store;
+Reactivity.Store = Store;
 
 const PropsReader = (creators) => {
     if (!(creators instanceof Object)) {
@@ -18,16 +17,16 @@ const PropsReader = (creators) => {
     let names = Object.getOwnPropertyNames(creators);
 
     const props = names
-            .map((name) => {
+        .map((name) => {
             if (!(creators[name] instanceof Function)) {
-        throw new Error(`${name} is not a function`)
-    } else {
-        return {
-            name,
-            creator: creators[name]
-        };
-    }
-});
+                throw new Error(`${name} is not a function`)
+            } else {
+                return {
+                    name,
+                    creator: creators[name]
+                };
+            }
+        });
 
     const actions = {};
 
@@ -37,27 +36,27 @@ const PropsReader = (creators) => {
         props.forEach(({name, creator}) => {
             let value = null;
 
-        if (actions[name]) {
-            value = actions[name];
-        } else {
-            value = creator(store);
+            if (actions[name]) {
+                value = actions[name];
+            } else {
+                value = creator(store);
 
-            if (value instanceof Function) {
-                const originValue = value;
-                value = (...args) => update(store, () => originValue.apply(creators, args));
-                actions[name] = value;
+                if (value instanceof Function) {
+                    const originValue = value;
+                    value = (...args) => update(store, () => originValue.apply(creators, args));
+                    actions[name] = value;
+                }
             }
-        }
 
-        instance[name] = value;
-    });
+            instance[name] = value;
+        });
         return instance;
     };
 };
-exports.PropsReader = PropsReader;
+Reactivity.PropsReader = PropsReader;
 
 const connectStoreKey = '__symbol_ireactivity_store';
-exports.connectStoreKey = connectStoreKey;
+Reactivity.connectStoreKey = connectStoreKey;
 
 const connect = (component, propsCreators = {}) => {
     const propsReader = PropsReader(propsCreators);
@@ -98,7 +97,7 @@ const connect = (component, propsCreators = {}) => {
 
     return Connected;
 };
-exports.connect = connect;
+Reactivity.connect = connect;
 
 class Provider extends Component {
     constructor(props, context) {
@@ -125,4 +124,6 @@ Provider.childContextTypes = {
     [connectStoreKey]: PropTypes.object
 };
 
-exports.Provider = Provider;
+Reactivity.Provider = Provider;
+
+module.exports = Reactivity;

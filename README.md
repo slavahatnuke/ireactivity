@@ -3,50 +3,26 @@ Simple React binding
 
 ## Example
 ```javascript
-// AppView.js
-import React from 'react';
-// import './App.css';
-
-let uid = () => Math.random().toString(35).slice(2, 30);
-
-export default ({user, clickSync, clickAsync}) =>
-    <div className="App">
-        <div className="header">
-            <h2>{user.name} {user.id}</h2>
-        </div>
-        <p className="actions">
-            <button onClick={clickSync}>Sync</button>
-            <button onClick={() => clickAsync(uid()) }>Async</button>
-        </p>
-    </div>
-```
-
-```javascript
 // index.js
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, connect, update} from 'ireactivity';
+import {Provider, connect, update} from './ireactivity';
 
-// import './index.css';
 import AppView from './AppView';
-
-//helpers
 let uid = () => Math.random().toString(35).slice(2, 10);
 let wait = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
 
-//User model
 class User {
     constructor(name) {
-        this.uid = null;
+        this.id = null;
         this.name = name;
     }
 }
 
-//User state
 class UserState {
-    constructor() {
-        this.user = new User('slava');
+    constructor(user) {
+        this.user = user;
     }
 
     setId(id) {
@@ -58,41 +34,58 @@ class UserState {
     }
 
     asyncSetId(id) {
-        //sync update
         this.setId(null);
 
-        //async update
         return Promise.resolve()
-            .then(() => wait(2000)) // just for example
-            .then(() => this.setId(id))
+            .then(() => wait(1000)) // just for example
+            .then(() => this.setId(id));
     }
 }
 
+
 const store = {
-    user: new UserState()
+    user: new UserState(new User('slava'))
 };
 
 const App = connect(AppView, {
     user: (store) => store.user.user,
-    clickSync: (store) => () => store.user.generateId(),
-    clickAsync: (store) => (id) => store.user.asyncSetId(id)
+    onClickSync: (store) => () => store.user.generateId(),
+    onClickAsync: (store) => (id) => store.user.asyncSetId(id)
 });
 
 ReactDOM.render(
-        <Provider store={store}>
-            <App/>
-        </Provider>,
+    <Provider store={store}>
+        <App/>
+    </Provider>,
     document.getElementById('root')
 );
 
 
 // if you need to update store outside of components for ex. socket.io
 // just update store like this
-
-// setInterval(() => {
-//     update(store, (store) => {
-//         store.user.generateId();
-//     });
-// }, 500);
+update(store, (store) => {
+    store.user.generateId();
+});
 
 ```
+
+```javascript
+// AppView.js
+
+import React from 'react';
+
+let uid = () => Math.random().toString(35).slice(2, 30);
+
+export default ({user, onClickSync, onClickAsync}) =>
+    <div className="App">
+        <div className="header">
+            <h2>{user.name} {user.id}</h2>
+        </div>
+        <p className="actions">
+            <button onClick={onClickSync}>Sync</button>
+            <button onClick={() => onClickAsync(uid()) }>Async</button>
+        </p>
+    </div>
+```
+
+Just have a dream!
