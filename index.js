@@ -58,7 +58,7 @@ Reactivity.PropsReader = PropsReader;
 const connectStoreKey = '__symbol_ireactivity_store';
 Reactivity.connectStoreKey = connectStoreKey;
 
-const hasChange = (state1, state2) => {
+const hasChange = (state1, state2, options = {}, level = 0) => {
     let names = Object.getOwnPropertyNames(state1);
     names = [...names, ...Object.getOwnPropertyNames(state2)];
 
@@ -79,14 +79,14 @@ const connect = (component, propsCreators = {}, options = {}) => {
     let previousState = {};
 
     options = Object.assign({
-        immutable: false
+        stateless: false
     }, options);
 
     class Connected extends React.Component {
         constructor(props, context) {
             super(props, context);
 
-            this.store = props['store'] || Provider.getStoreByContext(context);
+            this.store = Provider.getStoreByContext(context);
             this.state = previousState = this.getObservableState();
             this.updateByObservableState = this.updateByObservableState.bind(this);
         }
@@ -98,13 +98,13 @@ const connect = (component, propsCreators = {}, options = {}) => {
         updateByObservableState() {
             const state = this.getObservableState();
 
-            if (options.immutable) {
+            if (options.stateless) {
+                this.setState(state);
+            } else {
                 if (hasChange(state, previousState)) {
                     previousState = state;
                     this.setState(state);
                 }
-            } else {
-                this.setState(state);
             }
         }
 
@@ -131,7 +131,7 @@ Reactivity.connect = connect;
 
 const iconnect = (component, propsCreators = {}, options = {}) => {
     options = Object.assign({
-        immutable: true
+        stateless: true
     }, options);
 
     return connect(component, propsCreators, options);
