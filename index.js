@@ -58,15 +58,36 @@ Reactivity.PropsReader = PropsReader;
 const connectStoreKey = '__symbol_ireactivity_store';
 Reactivity.connectStoreKey = connectStoreKey;
 
-const connect = (component, propsCreators = {}) => {
+const hasChange = (state1, state2) => {
+    let names = Object.getOwnPropertyNames(state1);
+    names = [...names, ...Object.getOwnPropertyNames(state2)];
+
+    for (let i = 0; i < names.length; i++) {
+        let name = names[i];
+        if (state1[name] !== state2[name]) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+Reactivity.hasChange = hasChange;
+const connect = (component, propsCreators = {}, options = {}) => {
+
     const propsReader = PropsReader(propsCreators);
+    let previousState = {};
+
+    options = Object.assign({
+        immutable: false
+    }, options);
 
     class Connected extends React.Component {
         constructor(props, context) {
             super(props, context);
 
             this.store = props['store'] || Provider.getStoreByContext(context);
-            this.state = this.getObservableState();
+            this.state = previousState = this.getObservableState();
             this.updateByObservableState = this.updateByObservableState.bind(this);
         }
 
@@ -75,7 +96,16 @@ const connect = (component, propsCreators = {}) => {
         }
 
         updateByObservableState() {
-            this.setState(this.getObservableState());
+            const state = this.getObservableState();
+
+            if (options.immutable) {
+                if (hasChange(state, previousState)) {
+                    previousState = state;
+                    this.setState(state);
+                }
+            } else {
+                this.setState(state);
+            }
         }
 
         componentDidMount() {
