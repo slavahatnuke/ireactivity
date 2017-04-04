@@ -7,7 +7,7 @@ Simple React binding
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, connect, update} from './ireactivity';
+import {Provider, connect, update} from 'ireactivity';
 
 import AppView from './AppView';
 let uid = () => Math.random().toString(35).slice(2, 10);

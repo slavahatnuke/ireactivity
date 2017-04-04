@@ -4,7 +4,7 @@ const iObserver = require('iobserver');
 const {Children, Component, PropTypes} = React;
 const {observable, update, subscribe, unsubscribe} = iObserver;
 
-const Reactivity = {...iObserver};
+const Reactivity = iObserver;
 
 const Store = observable;
 Reactivity.Store = Store;

@@ -1,6 +1,6 @@
 {
   "name": "ireactivity",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "ireactivity - Simple React binding",
   "main": "index.js",
   "directories": {
