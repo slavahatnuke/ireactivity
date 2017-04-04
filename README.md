@@ -6,10 +6,9 @@ GitHub: [https://github.com/slavahatnuke/ireactivity-example](https://github.com
 
 ```javascript
 // index.js
-
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, connect, update} from 'ireactivity';
+import {Provider, connect, iconnect, update} from 'ireactivity';
 
 import AppView from './AppView';
 let uid = () => Math.random().toString(35).slice(2, 10);
@@ -28,7 +27,8 @@ class UserState {
     }
 
     setId(id) {
-        this.user.id = id;
+        // this.user.id = id;
+        this.user = {...this.user, ...{id}};
     }
 
     generateId() {
@@ -39,7 +39,7 @@ class UserState {
         this.setId(null);
 
         return Promise.resolve()
-            .then(() => wait(1000)) // just for example
+            .then(() => wait(500)) // just for example
             .then(() => this.setId(id));
     }
 }
