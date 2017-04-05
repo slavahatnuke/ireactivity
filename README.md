@@ -4,7 +4,7 @@ Simple React binding
 ## Example
 GitHub: [https://github.com/slavahatnuke/ireactivity-example](https://github.com/slavahatnuke/ireactivity-example)
 
-```jsx harmony
+```javascript
 // index.js
 import React from 'react';
 import ReactDOM from 'react-dom';
