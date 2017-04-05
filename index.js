@@ -1,5 +1,6 @@
 const React = require('react');
 const iObserver = require('iobserver');
+const {copy, isSame} = require('icopier');
 
 const {Children, Component, PropTypes} = React;
 const {observable, update, subscribe, unsubscribe} = iObserver;
@@ -58,28 +59,14 @@ Reactivity.PropsReader = PropsReader;
 const connectStoreKey = '__symbol_ireactivity_store';
 Reactivity.connectStoreKey = connectStoreKey;
 
-const hasChange = (state1, state2, options = {}, level = 0) => {
-    let names = Object.getOwnPropertyNames(state1);
-    names = [...names, ...Object.getOwnPropertyNames(state2)];
-
-    for (let i = 0; i < names.length; i++) {
-        let name = names[i];
-        if (state1[name] !== state2[name]) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-Reactivity.hasChange = hasChange;
 const connect = (component, propsCreators = {}, options = {}) => {
 
     const propsReader = PropsReader(propsCreators);
     let previousState = {};
 
     options = Object.assign({
-        stateless: false
+        stateless: false,
+        depth: 0
     }, options);
 
     class Connected extends React.Component {
@@ -87,7 +74,12 @@ const connect = (component, propsCreators = {}, options = {}) => {
             super(props, context);
 
             this.store = Provider.getStoreByContext(context);
-            this.state = previousState = this.getObservableState();
+            this.state = this.getObservableState();
+
+            if(!options.stateless) {
+                previousState = copy(this.state, options.depth);
+            }
+
             this.updateByObservableState = this.updateByObservableState.bind(this);
         }
 
@@ -101,9 +93,9 @@ const connect = (component, propsCreators = {}, options = {}) => {
             if (options.stateless) {
                 this.setState(state);
             } else {
-                if (hasChange(state, previousState)) {
-                    previousState = state;
+                if (!isSame(state, previousState, options.depth)) {
                     this.setState(state);
+                    previousState = copy(state, options.depth);
                 }
             }
         }

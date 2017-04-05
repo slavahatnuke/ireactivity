@@ -1,6 +1,6 @@
 {
   "name": "ireactivity",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "ireactivity - Simple React binding",
   "main": "index.js",
   "directories": {
@@ -27,6 +27,7 @@
     "mocha": "^3.2.0"
   },
   "dependencies": {
-    "iobserver": "0.0.4"
+    "icopier": "0.0.5",
+    "iobserver": "0.0.5"
   }
 }
