@@ -4,11 +4,11 @@ Simple React binding
 ## Example
 GitHub: [https://github.com/slavahatnuke/ireactivity-example](https://github.com/slavahatnuke/ireactivity-example)
 
-```javascript
+```jsx harmony
 // index.js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, connect, iconnect, update} from 'ireactivity';
+import {Provider, connect, update} from 'ireactivity';
 
 import AppView from './AppView';
 let uid = () => Math.random().toString(35).slice(2, 10);
