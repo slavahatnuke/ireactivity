@@ -2,8 +2,9 @@ const React = require('react');
 const iObserver = require('iobserver');
 const {copy, isSame} = require('icopier');
 
-const {Children, Component, PropTypes} = React;
+const {Children, Component} = React;
 const {observable, update, subscribe, unsubscribe} = iObserver;
+const PropTypes = require.resolve('prop-types') ? require('prop-types') : React.PropTypes;
 
 const Reactivity = iObserver;
 
@@ -114,7 +115,7 @@ const connect = (component, propsCreators = {}, options = {}) => {
     }
 
     Connected.contextTypes = {
-        [connectStoreKey]: React.PropTypes.object
+        [connectStoreKey]: PropTypes.object
     };
 
     return Connected;
