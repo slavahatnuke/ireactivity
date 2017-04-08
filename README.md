@@ -4,7 +4,7 @@ Simple React binding
 ## Example
 GitHub:
 - just concept [https://github.com/slavahatnuke/ireactivity-example](https://github.com/slavahatnuke/ireactivity-example)
-- simple web todo list [https://github.com/slavahatnuke/ireactivity-web-simple-list-example][https://github.com/slavahatnuke/ireactivity-web-simple-list-example]
+- simple web todo list [https://github.com/slavahatnuke/ireactivity-web-simple-list-example](https://github.com/slavahatnuke/ireactivity-web-simple-list-example)
 
 ```javascript
 // index.js
