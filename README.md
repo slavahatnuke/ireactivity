@@ -8,55 +8,47 @@ GitHub:
 
 ```javascript
 // index.js
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, connect} from 'ireactivity';
-const uid = () => Math.random().toString(35).slice(2, 8).toUpperCase();
 
-const store = {
-    todos: [
-        {title: 'Todo #1', id: uid()},
-        {title: 'Todo #2', id: uid()}
-    ]
-};
+// main functions of iReactivity
+import {Provider, connect, update} from 'ireactivity';
 
-const TodoView = ({todo, onRemove}) =>
-    <div>
-        <button onClick={() => onRemove(todo)}>x</button>
-        {todo.title}
-    </div>
+// just an object
+const store = {name: 'Hello'};
 
-const Todo = connect(TodoView, {
-    onRemove: (store) => (todo) => {
-        store.todos = store.todos.filter((aTodo) => todo !== aTodo)
-    }
-});
-
-const TodosView = ({todos}) =>
-    <div>
-        {todos.map((todo) => <Todo key={todo.id} todo={todo}/>)}
+// just a view of App,
+// onClick it should change something.
+const AppView = ({name, onClick}) =>
+    <div onClick={onClick} style={ {cursor: 'pointer'} }>
+        {name}
     </div>;
 
-const Todos = connect(TodosView, {
-    todos: (store) => store.todos
+// connected AppView to the store
+const App = connect(AppView, {
+    name: (store) => store.name,
+    onClick: (store) => () => store.name += ' World!!'
 });
 
-const TodoPlusView = ({onClick}) => <button onClick={onClick}>Add</button>;
-
-const TodoPlus = connect(TodoPlusView, {
-    onClick: (store) => () => {
-        let id = uid();
-        store.todos = [...store.todos, {title: `Todo #${id}`, id: id}]
-    }
-});
-
-const AppView = () => <div><h1>List</h1> <TodoPlus/> <Todos/></div>;
-
-const App = AppView;
-
+// rendering
 ReactDOM.render(
-    <Provider store={store}><App/></Provider>,
-    document.getElementById('root'));
+    <Provider store={store}>
+        <App/>
+    </Provider>,
+    document.getElementById('root')
+);
+
+// if you need to update store
+// outside of components
+// for ex. socket.io
+let timeout30s = 30 * 1000; // just for example
+
+setTimeout(() => {
+    update(store, (store) => {
+        store.name = 'Something NEW!!!';
+    });
+}, timeout30s);
 
 ```
 
