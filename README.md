@@ -2,92 +2,62 @@
 Simple React binding
 
 ## Example
-GitHub: [https://github.com/slavahatnuke/ireactivity-example](https://github.com/slavahatnuke/ireactivity-example)
+GitHub:
+- just concept [https://github.com/slavahatnuke/ireactivity-example](https://github.com/slavahatnuke/ireactivity-example)
+- simple web todo list [https://github.com/slavahatnuke/ireactivity-web-simple-list-example][https://github.com/slavahatnuke/ireactivity-web-simple-list-example]
 
 ```javascript
 // index.js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, connect, update} from 'ireactivity';
-
-import AppView from './AppView';
-let uid = () => Math.random().toString(35).slice(2, 10);
-let wait = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
-
-class User {
-    constructor(name) {
-        this.id = null;
-        this.name = name;
-    }
-}
-
-class UserState {
-    constructor(user) {
-        this.user = user;
-    }
-
-    setId(id) {
-        // this.user.id = id;
-        this.user = {...this.user, ...{id}};
-    }
-
-    generateId() {
-        this.setId(uid())
-    }
-
-    asyncSetId(id) {
-        this.setId(null);
-
-        return Promise.resolve()
-            .then(() => wait(500)) // just for example
-            .then(() => this.setId(id));
-    }
-}
-
+import {Provider, connect} from 'ireactivity';
+const uid = () => Math.random().toString(35).slice(2, 8).toUpperCase();
 
 const store = {
-    user: new UserState(new User('slava'))
+    todos: [
+        {title: 'Todo #1', id: uid()},
+        {title: 'Todo #2', id: uid()}
+    ]
 };
 
-const App = connect(AppView, {
-    user: (store) => store.user.user,
-    onClickSync: (store) => () => store.user.generateId(),
-    onClickAsync: (store) => (id) => store.user.asyncSetId(id)
+const TodoView = ({todo, onRemove}) =>
+    <div>
+        <button onClick={() => onRemove(todo)}>x</button>
+        {todo.title}
+    </div>
+
+const Todo = connect(TodoView, {
+    onRemove: (store) => (todo) => {
+        store.todos = store.todos.filter((aTodo) => todo !== aTodo)
+    }
 });
+
+const TodosView = ({todos}) =>
+    <div>
+        {todos.map((todo) => <Todo key={todo.id} todo={todo}/>)}
+    </div>;
+
+const Todos = connect(TodosView, {
+    todos: (store) => store.todos
+});
+
+const TodoPlusView = ({onClick}) => <button onClick={onClick}>Add</button>;
+
+const TodoPlus = connect(TodoPlusView, {
+    onClick: (store) => () => {
+        let id = uid();
+        store.todos = [...store.todos, {title: `Todo #${id}`, id: id}]
+    }
+});
+
+const AppView = () => <div><h1>List</h1> <TodoPlus/> <Todos/></div>;
+
+const App = AppView;
 
 ReactDOM.render(
-    <Provider store={store}>
-        <App/>
-    </Provider>,
-    document.getElementById('root')
-);
+    <Provider store={store}><App/></Provider>,
+    document.getElementById('root'));
 
-
-// if you need to update store outside of components for ex. socket.io
-// just update store like this
-update(store, (store) => {
-    store.user.generateId();
-});
-
-```
-
-```javascript
-// AppView.js
-
-import React from 'react';
-
-let uid = () => Math.random().toString(35).slice(2, 30);
-
-export default ({user, onClickSync, onClickAsync}) =>
-    <div className="App">
-        <div className="header">
-            <h2>{user.name} {user.id}</h2>
-        </div>
-        <p className="actions">
-            <button onClick={onClickSync}>Sync</button>
-            <button onClick={() => onClickAsync(uid()) }>Async</button>
-        </p>
-    </div>
 ```
 
 Just have a dream!
