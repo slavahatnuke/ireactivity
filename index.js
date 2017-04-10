@@ -4,7 +4,13 @@ const {copy, isSame} = require('icopier');
 
 const {Children, Component} = React;
 const {observable, update, subscribe, unsubscribe} = iObserver;
-const PropTypes = require.resolve('prop-types') ? require('prop-types') : React.PropTypes;
+
+let PropTypes = null;
+try {
+    PropTypes = require('prop-types')
+} catch (error) {
+    PropTypes = React.PropTypes;
+}
 
 const Reactivity = iObserver;
 
@@ -77,7 +83,7 @@ const connect = (component, propsCreators = {}, options = {}) => {
             this.store = Provider.getStoreByContext(context);
             this.state = this.getObservableState();
 
-            if(!options.stateless) {
+            if (!options.stateless) {
                 previousState = copy(this.state, options.depth);
             }
 
