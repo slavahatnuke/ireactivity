@@ -73,19 +73,22 @@ const connect = (component, propsCreators = {}, options = {}) => {
 
     options = Object.assign({
         stateless: false,
+        store: null,
         depth: 0
     }, options);
 
-    class Connected extends React.Component {
+    class ConnectedComponent extends Component {
         constructor(props, context) {
             super(props, context);
 
-            this.store = Provider.getStoreByContext(context);
+            this.store = options.store || Provider.getStoreByContext(context);
             this.state = this.getObservableState();
 
             if (!options.stateless) {
                 previousState = copy(this.state, options.depth);
             }
+
+            this.mounted = false;
 
             this.updateByObservableState = this.updateByObservableState.bind(this);
         }
@@ -95,6 +98,10 @@ const connect = (component, propsCreators = {}, options = {}) => {
         }
 
         updateByObservableState() {
+            if(!this.mounted) {
+                return null;
+            }
+
             const state = this.getObservableState();
 
             if (options.stateless) {
@@ -108,10 +115,12 @@ const connect = (component, propsCreators = {}, options = {}) => {
         }
 
         componentDidMount() {
+            this.mounted = true;
             subscribe(this.store, this.updateByObservableState);
         }
 
         componentWillUnmount() {
+            this.mounted = false;
             unsubscribe(this.store, this.updateByObservableState);
         }
 
@@ -120,11 +129,11 @@ const connect = (component, propsCreators = {}, options = {}) => {
         }
     }
 
-    Connected.contextTypes = {
+    ConnectedComponent.contextTypes = {
         [connectStoreKey]: PropTypes.object
     };
 
-    return Connected;
+    return ConnectedComponent;
 };
 Reactivity.connect = connect;
 
@@ -140,8 +149,8 @@ Reactivity.iconnect = iconnect;
 
 class Provider extends Component {
     constructor(props, context) {
-        super(props, context);
         Store(props.store);
+        super(props, context);
     }
 
     getChildContext() {
@@ -164,5 +173,11 @@ Provider.childContextTypes = {
 };
 
 Reactivity.Provider = Provider;
+
+const state = (state, component) => React.createElement(connect(component, {}, {
+    stateless: true,
+    store: state
+}));
+Reactivity.state = state;
 
 module.exports = Reactivity;
