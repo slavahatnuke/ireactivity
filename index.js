@@ -77,6 +77,10 @@ const connect = (component, propsCreators = {}, options = {}) => {
         depth: 0
     }, options);
 
+    if (options.store) {
+        Store(options.store)
+    }
+
     class ConnectedComponent extends Component {
         constructor(props, context) {
             super(props, context);
@@ -98,7 +102,7 @@ const connect = (component, propsCreators = {}, options = {}) => {
         }
 
         updateByObservableState() {
-            if(!this.mounted) {
+            if (!this.mounted) {
                 return null;
             }
 
