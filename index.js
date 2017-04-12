@@ -174,10 +174,10 @@ Provider.childContextTypes = {
 
 Reactivity.Provider = Provider;
 
-const state = (state, component) => React.createElement(connect(component, {}, {
+const render = (state, component) => React.createElement(connect(component, {}, {
     stateless: true,
     store: state
 }));
-Reactivity.state = state;
+Reactivity.render = render;
 
 module.exports = Reactivity;
