@@ -1,13 +1,14 @@
 {
   "name": "ireactivity",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "ireactivity - Simple React binding",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "up": "npm i -S icopier@latest iobserver@latest"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,6 @@
   },
   "dependencies": {
     "icopier": "0.0.5",
-    "iobserver": "0.0.5"
+    "iobserver": "0.0.7"
   }
 }

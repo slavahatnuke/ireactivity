@@ -1,9 +1,10 @@
 const React = require('react');
-const iObserver = require('iobserver');
-const {copy, isSame} = require('icopier');
+const observer = require('iobserver');
+const copier = require('icopier');
 
+const {copy, isSame} = copier;
 const {Children, Component} = React;
-const {observable, update, subscribe, unsubscribe} = iObserver;
+const {observable, update, subscribe, unsubscribe, isFunction, isObject} = observer;
 
 let PropTypes = null;
 try {
@@ -12,21 +13,18 @@ try {
     PropTypes = React.PropTypes;
 }
 
-const Reactivity = iObserver;
-
 const Store = observable;
-Reactivity.Store = Store;
 
 const PropsReader = (creators) => {
-    if (!(creators instanceof Object)) {
-        throw new Error('Do not support this type: ' + typeof creators);
+    if (!isObject(creators)) {
+        throw new Error('Do not support this: ' + creators);
     }
 
     let names = Object.getOwnPropertyNames(creators);
 
     const props = names
         .map((name) => {
-            if (!(creators[name] instanceof Function)) {
+            if (!isFunction(creators[name])) {
                 throw new Error(`${name} is not a function`)
             } else {
                 return {
@@ -49,7 +47,7 @@ const PropsReader = (creators) => {
             } else {
                 value = creator(store);
 
-                if (value instanceof Function) {
+                if (isFunction(value)) {
                     const originValue = value;
                     value = (...args) => update(store, () => originValue.apply(creators, args));
                     actions[name] = value;
@@ -61,11 +59,8 @@ const PropsReader = (creators) => {
         return instance;
     };
 };
-Reactivity.PropsReader = PropsReader;
 
-const connectStoreKey = '__symbol_ireactivity_store';
-Reactivity.connectStoreKey = connectStoreKey;
-
+const storeSymbol = '__symbol_ireactivity_store';
 const connect = (component, propsCreators = {}, options = {}) => {
 
     const propsReader = PropsReader(propsCreators);
@@ -134,22 +129,19 @@ const connect = (component, propsCreators = {}, options = {}) => {
     }
 
     ConnectedComponent.contextTypes = {
-        [connectStoreKey]: PropTypes.object
+        [storeSymbol]: PropTypes.object
     };
 
     return ConnectedComponent;
 };
-Reactivity.connect = connect;
 
-const iconnect = (component, propsCreators = {}, options = {}) => {
+const stateless = (component, propsCreators = {}, options = {}) => {
     options = Object.assign({
         stateless: true
     }, options);
 
     return connect(component, propsCreators, options);
 };
-
-Reactivity.iconnect = iconnect;
 
 class Provider extends Component {
     constructor(props, context) {
@@ -158,7 +150,7 @@ class Provider extends Component {
     }
 
     getChildContext() {
-        return {[connectStoreKey]: this.props.store};
+        return {[storeSymbol]: this.props.store};
     }
 
     render() {
@@ -166,22 +158,30 @@ class Provider extends Component {
     }
 }
 
-Provider.getStoreByContext = (context) => context[connectStoreKey] || null;
+Provider.getStoreByContext = (context) => context[storeSymbol] || null;
 
 Provider.propTypes = {
     store: PropTypes.object
 };
 
 Provider.childContextTypes = {
-    [connectStoreKey]: PropTypes.object
+    [storeSymbol]: PropTypes.object
 };
 
-Reactivity.Provider = Provider;
-
-const render = (state, component) => React.createElement(connect(component, {}, {
-    stateless: true,
+const render = (state, component) => React.createElement(stateless(component, {}, {
     store: state
 }));
-Reactivity.render = render;
 
-module.exports = Reactivity;
+module.exports = {
+    Provider,
+    Store,
+    update,
+    up: update,
+    connect,
+    stateless,
+    render,
+    observer,
+    copier,
+    PropsReader,
+    storeSymbol,
+};
