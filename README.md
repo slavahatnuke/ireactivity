@@ -3,6 +3,7 @@ Simple React binding
 
 ## Example
 GitHub:
+- counter app [https://github.com/slavahatnuke/ireactivity-counter-example](https://github.com/slavahatnuke/ireactivity-counter-example)
 - just concept [https://github.com/slavahatnuke/ireactivity-example](https://github.com/slavahatnuke/ireactivity-example)
 - simple web todo list [https://github.com/slavahatnuke/ireactivity-web-simple-list-example](https://github.com/slavahatnuke/ireactivity-web-simple-list-example)
 - simple native todo list [https://github.com/slavahatnuke/ireactivity-native-simple-list-example](https://github.com/slavahatnuke/ireactivity-native-simple-list-example)
