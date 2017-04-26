@@ -1,5 +1,5 @@
 # iReactivity
-Simple React binding
+Simple/lightweight (~3k) React binding
 
 ## Example
 GitHub:
