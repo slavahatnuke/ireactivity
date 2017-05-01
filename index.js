@@ -182,6 +182,6 @@ module.exports = {
     render,
     observer,
     copier,
-    PropsReader,
+    propsReader: PropsReader,
     storeSymbol,
 };

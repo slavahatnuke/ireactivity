@@ -635,7 +635,7 @@ module.exports = {
     render: render,
     observer: observer,
     copier: copier,
-    PropsReader: PropsReader,
+    propsReader: PropsReader,
     storeSymbol: storeSymbol
 };
 

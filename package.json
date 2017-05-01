@@ -1,7 +1,7 @@
 {
   "name": "ireactivity",
-  "version": "0.0.23",
-  "description": "ireactivity - Simple React binding",
+  "version": "0.0.24",
+  "description": "iReactivity - Simple/lightweight (~3k) React binding",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -17,7 +17,9 @@
   },
   "keywords": [
     "plus",
-    "ireactivity"
+    "ireactivity",
+    "react",
+    "binding"
   ],
   "author": "slava hatnuke",
   "license": "ISC",
