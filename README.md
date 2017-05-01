@@ -1,7 +1,7 @@
 # iReactivity
 Simple / lightweight (~3k) React binding.
 
-### In the simple words
+### In simple words
 - Every object can be `Store`. `Store` is state of your app. 
 - You can organise this store in any comfortable way for you.
 - You can connect any component to this `Store`.
@@ -30,8 +30,8 @@ const Project = connect(ProjectView, {
     onOk: (store) => () => store.project.name = 'iReactivity OK'
 });
 ```
-When you click on `OK` it `store.project.name = 'iReactivity OK'` updates store and UI react on this.
-How does it work? For each action from your side it calls `update` Please read `update`. 
+When you click on `OK` it updates store and UI react on this (`store.project.name = 'iReactivity OK'`).
+How does it work? For each action from user side it calls `update`. Please read `update`. 
 
 ##### Update
 It's the simple event that notifies `store`. When you call `update(store)`, connected component will try to react if there is some changes.
@@ -67,38 +67,32 @@ const Project = connect(ProjectView, {
 });
 ```
 
-### Hello world example:
+#### Hello world example:
 ```javascript
-// index.js
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import {Provider, connect, update} from 'ireactivity';
 
-const store = {name: 'Hello'};
-const AppView = ({name, onClick}) =>
-    <div onClick={onClick} style={ {cursor: 'pointer'} }>
-        {name}
-    </div>;
+const store = { name: 'Hello' };
+
+const AppView = ({name, onHello}) =>
+    <button onClick={onHello}> {name} </button>;
 
 const App = connect(AppView, {
     name: (store) => store.name,
-    onClick: (store) => () => store.name += ' World!!'
+    onHello: (store) => () => store.name += ' World!'
 });
 
 ReactDOM.render(
     <Provider store={store}><App/></Provider>, document.getElementById('root'));
 
-// if you need to update store
-// outside of components
-let timeout30s = 30 * 1000; // ex.
-
+// if you need to update store outside of components
 setTimeout(() => {
     update(store, (store) => {
         store.name = 'Something NEW!!!';
     });
-}, timeout30s);
+}, 30 * 1000);
 ```
 
 ### Examples
