@@ -34,7 +34,7 @@ When you click on `OK` it updates store and UI react on this (`store.project.nam
 How does it work? For each action from user side it calls `update`. Please read `update`. 
 
 ##### Update
-It's the simple event that notifies `store`. When you call `update(store)`, connected component will try to react if there is some changes.
+It's the event that notifies `store`. When you call `update(store)`, connected component will try to react if there is some changes.
 This example updates store without action from user side.
 
 ```javascript
