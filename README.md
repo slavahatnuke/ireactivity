@@ -1,16 +1,54 @@
 # iReactivity
 Simple / lightweight (~3k) React binding.
 
-### In simple words
-- Every object can be `Store`. `Store` is state of your app. 
-- You can organise this store in any comfortable way for you.
+## Counter example:
+```javascript
+// index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {Provider, connect} from 'ireactivity';
+
+import AppView from './App';
+
+const store = {
+    counter: 0
+};
+
+const App = connect(AppView, {
+    counter: (store) => store.counter,
+    onUp: (store) => () => store.counter = store.counter + 1
+});
+
+ReactDOM.render(
+    <Provider store={store}><App /></Provider>,
+    document.getElementById('root')
+);
+
+// App.js
+
+import React  from 'react';
+
+export default ({counter, onUp}) =>
+    <div className="counter-box">
+        <div className="counter">{counter}</div>
+        <button className="button" onClick={onUp}>UP</button>
+    </div>
+```
+
+## Documentation
+
+#### In simple words
+The main idea of this way:
+- Every object can be `Store`. `Store` is state of your app or state of your component. 
 - You can connect any component to this `Store`.
 
 ##### Store
-Store is everything you want. Store is state of app.
+Every object is state. Store is state of app.
 ```javascript
 const store = { user: { name: 'slava'}, project: { name: 'iReactivity'} };
 ```
+
 ##### Provider
 Provider provides `store` to the app and for the all components of app.
 ```javascript
@@ -31,7 +69,7 @@ const Project = connect(ProjectView, {
 });
 ```
 When you click on `OK` it updates store and UI react on this (`store.project.name = 'iReactivity OK'`).
-How does it work? For each action from user side it calls `update`. Please read `update`. 
+For each action from user side it calls `update` method. 
 
 ##### Update
 It's the event that notifies `store`. When you call `update(store)`, connected component will try to react if there is some changes.
@@ -101,4 +139,4 @@ setTimeout(() => {
 - simple web todo list [https://github.com/slavahatnuke/ireactivity-web-simple-list-example](https://github.com/slavahatnuke/ireactivity-web-simple-list-example)
 - simple native todo list [https://github.com/slavahatnuke/ireactivity-native-simple-list-example](https://github.com/slavahatnuke/ireactivity-native-simple-list-example)
 
-Thanks.
+Thanks [+1G](http://plus1generation.com/)
