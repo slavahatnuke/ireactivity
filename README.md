@@ -1,5 +1,5 @@
 # iReactivity
-Simple / lightweight (~3k) React binding.
+Simple / lightweight (~3kb) React binding.
 
 ## Counter example:
 ```javascript

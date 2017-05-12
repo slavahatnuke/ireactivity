@@ -1,7 +1,7 @@
 {
   "name": "ireactivity",
-  "version": "0.0.27",
-  "description": "iReactivity - Simple/lightweight (~3k) React binding",
+  "version": "0.0.28",
+  "description": "iReactivity - Simple/lightweight (~3kb) React binding",
   "main": "index.js",
   "directories": {
     "test": "test"
