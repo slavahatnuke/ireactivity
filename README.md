@@ -1,7 +1,57 @@
 # iReactivity
 Simple / lightweight (~3kb) React binding.
 
-## Counter example:
+## Counter example #1 - classes:
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {Provider, connect} from 'ireactivity';
+
+// Logic
+class Counter {
+  constructor() {
+    this.counter = 0;
+  }
+
+  onUp() {
+    this.counter++;
+  }
+}
+
+// Store
+const store = {
+  counter1: new Counter()
+};
+
+// View
+const CounterView = ({counter, onUp}) =>
+  <div>
+    <h1>Counter App</h1>
+    <p>{counter}</p>
+    <button onClick={onUp}>up</button>
+  </div>;
+
+// Connection #1
+const AppCounter1 = connect(CounterView,
+  (store) => store.counter1);
+
+// Connection #2
+const AppCounter2 = connect(CounterView,
+  (store) => new Counter());
+
+
+ReactDOM.render(
+  <Provider store={store}>
+    <div>
+      <AppCounter1/>
+      <AppCounter2/>
+    </div>
+  </Provider>,
+  document.getElementById('root')
+);
+```
+
+## Counter example #2 - objects:
 ```javascript
 // index.js
 
@@ -88,7 +138,7 @@ class ProjectLogic {
 const ProjectView = ({name, onOk}) =>
     <div> {name} <button onClick={onOk}>OK</button> </div>;
 
-const Project = connect(ProjectView, () => new ProjectLogic());
+const Project = connect(ProjectView, (store) => new ProjectLogic());
 ```
 
 ##### Update
