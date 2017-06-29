@@ -71,6 +71,26 @@ const Project = connect(ProjectView, {
 When you click on `OK` it updates store and UI react on this (`store.project.name = 'iReactivity OK'`).
 For each action from user side it calls `update` method. 
 
+###### Connect to object
+Same example but with isolated class
+
+```javascript
+class ProjectLogic {
+  constructor(){
+    this.name = 'iReactivity'
+  }
+  
+  onOk() {
+    this.name = 'iReactivity OK'        
+  }
+}
+
+const ProjectView = ({name, onOk}) =>
+    <div> {name} <button onClick={onOk}>OK</button> </div>;
+
+const Project = connect(ProjectView, () => new ProjectLogic());
+```
+
 ##### Update
 It's the event that notifies `store`. When you call `update(store)`, connected component will try to react if there is some changes.
 This example updates store without action from user side.

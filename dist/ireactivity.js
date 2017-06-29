@@ -421,222 +421,284 @@ var observable = observer.observable,
 
 var PropTypes = null;
 try {
-    PropTypes = __webpack_require__(2);
+  PropTypes = __webpack_require__(2);
 } catch (error) {
-    PropTypes = React.PropTypes;
+  // eslint-disable-next-line
+  PropTypes = React.PropTypes;
 }
 
 var Store = observable;
 
 var PropsReader = function PropsReader(creators) {
-    if (!isObject(creators)) {
-        throw new Error('Do not support this: ' + creators);
+  if (!isObject(creators)) {
+    throw new Error('Do not support this: ' + creators);
+  }
+
+  var names = Object.getOwnPropertyNames(creators);
+
+  var props = names.map(function (name) {
+    if (!isFunction(creators[name])) {
+      throw new Error(name + ' is not a function');
+    } else {
+      return {
+        name: name,
+        creator: creators[name]
+      };
     }
+  });
 
-    var names = Object.getOwnPropertyNames(creators);
+  var actions = {};
 
-    var props = names.map(function (name) {
-        if (!isFunction(creators[name])) {
-            throw new Error(name + ' is not a function');
-        } else {
-            return {
-                name: name,
-                creator: creators[name]
-            };
-        }
-    });
+  return function (store) {
+    var instance = {};
 
-    var actions = {};
+    props.forEach(function (_ref) {
+      var name = _ref.name,
+          creator = _ref.creator;
 
-    return function (store) {
-        var instance = {};
+      var value = null;
 
-        props.forEach(function (_ref) {
-            var name = _ref.name,
-                creator = _ref.creator;
+      if (actions[name]) {
+        value = actions[name];
+      } else {
+        value = creator(store);
 
-            var value = null;
-
-            if (actions[name]) {
-                value = actions[name];
-            } else {
-                value = creator(store);
-
-                if (isFunction(value)) {
-                    var originValue = value;
-                    value = function value() {
-                        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-                            args[_key] = arguments[_key];
-                        }
-
-                        return update(store, function () {
-                            return originValue.apply(creators, args);
-                        });
-                    };
-                    actions[name] = value;
-                }
+        if (isFunction(value)) {
+          var originValue = value;
+          value = function value() {
+            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+              args[_key] = arguments[_key];
             }
 
-            instance[name] = value;
-        });
-        return instance;
-    };
+            return update(store, function () {
+              return originValue.apply(creators, args);
+            });
+          };
+          actions[name] = value;
+        }
+      }
+
+      instance[name] = value;
+    });
+    return instance;
+  };
 };
 
 var storeSymbol = '__symbol_ireactivity_store';
 var connect = function connect(component) {
-    var propsCreators = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var propsCreators = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 
-    var propsReader = PropsReader(propsCreators);
-    var previousState = {};
+  if (isFunction(propsCreators)) {
+    return widget(component, propsCreators, options);
+  }
 
-    options = Object.assign({
-        stateless: false,
-        store: null,
-        depth: 0
-    }, options);
+  var propsReader = PropsReader(propsCreators);
+  var previousState = {};
 
-    if (options.store) {
-        Store(options.store);
+  options = Object.assign({
+    stateless: false,
+    store: null,
+    depth: 0
+  }, options);
+
+  if (options.store) {
+    Store(options.store);
+  }
+
+  var ConnectedComponent = function (_Component) {
+    _inherits(ConnectedComponent, _Component);
+
+    function ConnectedComponent(props, context) {
+      _classCallCheck(this, ConnectedComponent);
+
+      var _this = _possibleConstructorReturn(this, (ConnectedComponent.__proto__ || Object.getPrototypeOf(ConnectedComponent)).call(this, props, context));
+
+      _this.store = options.store || Provider.getStoreByContext(context);
+      _this.state = _this.getObservableState();
+
+      if (!options.stateless) {
+        previousState = copy(_this.state, options.depth);
+      }
+
+      _this.mounted = false;
+
+      _this.updateByObservableState = _this.updateByObservableState.bind(_this);
+      return _this;
     }
 
-    var ConnectedComponent = function (_Component) {
-        _inherits(ConnectedComponent, _Component);
-
-        function ConnectedComponent(props, context) {
-            _classCallCheck(this, ConnectedComponent);
-
-            var _this = _possibleConstructorReturn(this, (ConnectedComponent.__proto__ || Object.getPrototypeOf(ConnectedComponent)).call(this, props, context));
-
-            _this.store = options.store || Provider.getStoreByContext(context);
-            _this.state = _this.getObservableState();
-
-            if (!options.stateless) {
-                previousState = copy(_this.state, options.depth);
-            }
-
-            _this.mounted = false;
-
-            _this.updateByObservableState = _this.updateByObservableState.bind(_this);
-            return _this;
+    _createClass(ConnectedComponent, [{
+      key: 'getObservableState',
+      value: function getObservableState() {
+        return Object.assign({}, this.state, propsReader(this.store), this.props);
+      }
+    }, {
+      key: 'updateByObservableState',
+      value: function updateByObservableState() {
+        if (!this.mounted) {
+          return null;
         }
 
-        _createClass(ConnectedComponent, [{
-            key: 'getObservableState',
-            value: function getObservableState() {
-                return Object.assign({}, this.state, propsReader(this.store), this.props);
-            }
-        }, {
-            key: 'updateByObservableState',
-            value: function updateByObservableState() {
-                if (!this.mounted) {
-                    return null;
-                }
+        var state = this.getObservableState();
 
-                var state = this.getObservableState();
-
-                if (options.stateless) {
-                    this.setState(state);
-                } else {
-                    if (!isSame(state, previousState, options.depth)) {
-                        this.setState(state);
-                        previousState = copy(state, options.depth);
-                    }
-                }
-            }
-        }, {
-            key: 'componentDidMount',
-            value: function componentDidMount() {
-                this.mounted = true;
-                subscribe(this.store, this.updateByObservableState);
-            }
-        }, {
-            key: 'componentWillUnmount',
-            value: function componentWillUnmount() {
-                this.mounted = false;
-                unsubscribe(this.store, this.updateByObservableState);
-            }
-        }, {
-            key: 'render',
-            value: function render() {
-                return React.createElement(component, this.state);
-            }
-        }]);
-
-        return ConnectedComponent;
-    }(Component);
-
-    ConnectedComponent.contextTypes = _defineProperty({}, storeSymbol, PropTypes.object);
+        if (options.stateless) {
+          this.setState(state);
+        } else {
+          if (!isSame(state, previousState, options.depth)) {
+            this.setState(state);
+            previousState = copy(state, options.depth);
+          }
+        }
+      }
+    }, {
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        this.mounted = true;
+        subscribe(this.store, this.updateByObservableState);
+      }
+    }, {
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        this.mounted = false;
+        unsubscribe(this.store, this.updateByObservableState);
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        return React.createElement(component, this.state);
+      }
+    }]);
 
     return ConnectedComponent;
+  }(Component);
+
+  ConnectedComponent.contextTypes = _defineProperty({}, storeSymbol, PropTypes.object);
+
+  return ConnectedComponent;
+};
+
+var widget = function widget(component) {
+  var controllerCreator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {
+    return null;
+  };
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var ConnectedWidgetComponent = function (_Component2) {
+    _inherits(ConnectedWidgetComponent, _Component2);
+
+    function ConnectedWidgetComponent(props, context) {
+      _classCallCheck(this, ConnectedWidgetComponent);
+
+      var _this2 = _possibleConstructorReturn(this, (ConnectedWidgetComponent.__proto__ || Object.getPrototypeOf(ConnectedWidgetComponent)).call(this, props, context));
+
+      _this2.store = options.store || Provider.getStoreByContext(context);
+
+      if (!isFunction(controllerCreator)) {
+        throw new Error('ControllerCreator must should be function');
+      }
+
+      var controller = controllerCreator(_this2.store);
+      var propsCreators = {};
+
+      if (isObject(controller)) {
+        var names = [].concat(Object.getOwnPropertyNames(controller), Object.getOwnPropertyNames(Object.getPrototypeOf(controller)));
+
+        names.forEach(function (name) {
+          propsCreators[name] = function (store) {
+            if (isFunction(controller[name])) {
+              return controller[name].bind(controller);
+            } else {
+              return controller[name];
+            }
+          };
+        });
+      }
+
+      _this2.component = connect(component, propsCreators, options);
+      return _this2;
+    }
+
+    _createClass(ConnectedWidgetComponent, [{
+      key: 'render',
+      value: function render() {
+        return React.createElement(this.component, this.props);
+      }
+    }]);
+
+    return ConnectedWidgetComponent;
+  }(Component);
+
+  ConnectedWidgetComponent.contextTypes = _defineProperty({}, storeSymbol, PropTypes.object);
+
+  return ConnectedWidgetComponent;
 };
 
 var stateless = function stateless(component) {
-    var propsCreators = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var propsCreators = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-    options = Object.assign({
-        stateless: true
-    }, options);
+  options = Object.assign({
+    stateless: true
+  }, options);
 
-    return connect(component, propsCreators, options);
+  return connect(component, propsCreators, options);
 };
 
-var Provider = function (_Component2) {
-    _inherits(Provider, _Component2);
+var Provider = function (_Component3) {
+  _inherits(Provider, _Component3);
 
-    function Provider(props, context) {
-        _classCallCheck(this, Provider);
+  function Provider(props, context) {
+    _classCallCheck(this, Provider);
 
-        Store(props.store);
-        return _possibleConstructorReturn(this, (Provider.__proto__ || Object.getPrototypeOf(Provider)).call(this, props, context));
+    Store(props.store);
+    return _possibleConstructorReturn(this, (Provider.__proto__ || Object.getPrototypeOf(Provider)).call(this, props, context));
+  }
+
+  _createClass(Provider, [{
+    key: 'getChildContext',
+    value: function getChildContext() {
+      return _defineProperty({}, storeSymbol, this.props.store);
     }
+  }, {
+    key: 'render',
+    value: function render() {
+      return Children.only(this.props.children);
+    }
+  }]);
 
-    _createClass(Provider, [{
-        key: 'getChildContext',
-        value: function getChildContext() {
-            return _defineProperty({}, storeSymbol, this.props.store);
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            return Children.only(this.props.children);
-        }
-    }]);
-
-    return Provider;
+  return Provider;
 }(Component);
 
 Provider.getStoreByContext = function (context) {
-    return context[storeSymbol] || null;
+  return context[storeSymbol] || null;
 };
 
 Provider.propTypes = {
-    store: PropTypes.object
+  store: PropTypes.object
 };
 
 Provider.childContextTypes = _defineProperty({}, storeSymbol, PropTypes.object);
 
 var render = function render(state, component) {
-    return React.createElement(stateless(component, {}, {
-        store: state
-    }));
+  return React.createElement(stateless(component, {}, {
+    store: state
+  }));
 };
 
 module.exports = {
-    Provider: Provider,
-    Store: Store,
-    update: update,
-    up: update,
-    connect: connect,
-    stateless: stateless,
-    render: render,
-    observer: observer,
-    copier: copier,
-    propsReader: PropsReader,
-    storeSymbol: storeSymbol
+  Provider: Provider,
+  Store: Store,
+  update: update,
+  up: update,
+  connect: connect,
+  stateless: stateless,
+  render: render,
+  observer: observer,
+  copier: copier,
+  propsReader: PropsReader,
+  storeSymbol: storeSymbol,
+  widget: widget
 };
 
 /***/ })
