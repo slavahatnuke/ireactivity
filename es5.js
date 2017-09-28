@@ -1,10 +1,10 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory((function webpackLoadOptionalExternalModule() { try { return require("PropTypes"); } catch(e) {} }()), require("React"));
+		module.exports = factory((function webpackLoadOptionalExternalModule() { try { return require("prop-types"); } catch(e) {} }()), require("react"));
 	else if(typeof define === 'function' && define.amd)
-		define(["PropTypes", "React"], factory);
+		define(["prop-types", "react"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory((function webpackLoadOptionalExternalModule() { try { return require("PropTypes"); } catch(e) {} }()), require("React")) : factory(root["PropTypes"], root["React"]);
+		var a = typeof exports === 'object' ? factory((function webpackLoadOptionalExternalModule() { try { return require("prop-types"); } catch(e) {} }()), require("react")) : factory(root["prop-types"], root["react"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
 })(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__) {
@@ -377,7 +377,7 @@ module.exports = {
 /* 2 */
 /***/ (function(module, exports) {
 
-if(typeof __WEBPACK_EXTERNAL_MODULE_2__ === 'undefined') {var e = new Error("Cannot find module \"PropTypes\""); e.code = 'MODULE_NOT_FOUND'; throw e;}
+if(typeof __WEBPACK_EXTERNAL_MODULE_2__ === 'undefined') {var e = new Error("Cannot find module \"prop-types\""); e.code = 'MODULE_NOT_FOUND'; throw e;}
 module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
 /***/ }),

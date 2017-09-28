@@ -6,8 +6,8 @@ module.exports = {
         libraryTarget: 'umd'
     },
     externals: {
-        'react': 'React',
-        'prop-types': 'PropTypes'
+        'react': 'react',
+        'prop-types': 'prop-types'
     },
     module: {
         loaders: [
