@@ -5,7 +5,7 @@ Simple / lightweight (~3kb) React binding.
 ```javascript
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, connect} from 'ireactivity';
+import {Provider, connect} from 'ireactivity/es5';
 
 // Logic
 class Counter {

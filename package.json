@@ -1,6 +1,6 @@
 {
   "name": "ireactivity",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "iReactivity - Simple/lightweight (~3kb) React binding",
   "main": "index.js",
   "directories": {
@@ -9,7 +9,7 @@
   "scripts": {
     "test": "mocha",
     "up": "npm i -S icopier@latest iobserver@latest",
-    "build": "webpack && webpack --optimize-minimize --output-filename ireactivity.min.js"
+    "build": "webpack && webpack --optimize-minimize --output-filename es5.min.js"
   },
   "repository": {
     "type": "git",

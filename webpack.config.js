@@ -1,8 +1,8 @@
 module.exports = {
     entry: './index.js',
     output: {
-        filename: 'ireactivity.js',
-        path: `${__dirname}/dist`,
+        filename: 'es5.js',
+        path: `${__dirname}`,
         libraryTarget: 'umd'
     },
     externals: {
